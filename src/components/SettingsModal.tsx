@@ -8,6 +8,7 @@ import TokenFieldset from "./SettingsModal/TokenFieldset"
 import TypeFieldset from "./SettingsModal/TypeFieldset"
 import type {PlayerType, Player } from "../types/Player"
 import type { token } from "../types/token"
+import { useWindow } from "../hooks/useWindow"
 
 const StyledSettingsModal = styled.div`
     border: 2px solid white;
@@ -88,6 +89,7 @@ type SettingsModalProps = {
 export default function SettingsModal({players, newGameFn, closeModalFn}: SettingsModalProps) {
     const [settingsPlayers, setSettingsPlayers] = useState(players.map(player => 
         ({...player, score: 0, isCurrent: player.isFirst})) as [Player, Player])
+    const {windowInnerWidth, windowInnerHeight} = useWindow()
 
     const setFirstPlayer: setFirstPlayerFn = (index) => 
         setSettingsPlayers(prev => 
@@ -117,7 +119,7 @@ export default function SettingsModal({players, newGameFn, closeModalFn}: Settin
     }
 
     return (
-        <Modal closeModalFn={closeModalFn}>
+        <Modal closeModalFn={closeModalFn} justifyContent={windowInnerWidth < 500 || windowInnerHeight < 520 ? 'start' : 'center'}>
             <StyledSettingsModal>
                 <Title>Settings</Title>
                 <Form onSubmit={handleSubmit}>

@@ -60,6 +60,7 @@ const PageButton = styled.button`
     cursor: pointer;
 
     &:disabled {
+        color: grey;
         cursor: not-allowed;
     }
 

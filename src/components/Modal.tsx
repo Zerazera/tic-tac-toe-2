@@ -29,22 +29,30 @@ const CloseButton = styled.button`
     font-weight: bold;
 `
 
-const Main = styled.main`
+const Main = styled.main<{$justifyContent: justifyContentString}>`
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: ${({$justifyContent}) => $justifyContent};
     align-items: center;
     width: 99%;
     flex-grow: 1;
 `
 
-export default function Modal({children, closeModalFn}: {children: ReactNode, closeModalFn: () => void}) {
+type justifyContentString = 'start' | 'center' | 'end'
+
+type ModalProps = {
+    children: ReactNode, 
+    closeModalFn: () => void
+    justifyContent?: justifyContentString
+}
+
+export default function Modal({children, closeModalFn, justifyContent = 'center'}: ModalProps) {
     return (
         <Body>
             <Header>
                 <CloseButton onClick={closeModalFn}>&times;</CloseButton>
             </Header>
-            <Main>                
+            <Main $justifyContent={justifyContent}>                
                 {children}
             </Main>
         </Body>

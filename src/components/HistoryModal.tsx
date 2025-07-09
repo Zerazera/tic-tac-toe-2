@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import styled from "@emotion/styled"
 import Modal from "./Modal"
 import ModalButton from "./ModalButton"
 import Board from "./HistoryModal/Board"
 import HistoryDetailModal from "./HistoryDetailModal"
 import type { history } from "../types/history"
+import { useWindow } from "../hooks/useWindow"
 
 const Body = styled.div`
     height: 80vh;
@@ -35,7 +36,7 @@ const StyledHistoryModal = styled.div<{$windowInnerWidth: number, $windowInnerHe
     scrollbar-color: white black;
     scrollbar-width: thin;
     gap: 20px;
-    padding: 10px;
+    padding: 20px;
     padding-top: 0;
 
     @media screen and (height < 350px) {
@@ -57,19 +58,7 @@ const Buttons = styled.div`
 export default function HistoryModal({histories, closeModalFn}: {histories: history[], closeModalFn: () => void}) {
     const [isHistoryDetailModalShown, setIsHistoryDetailModalShown] = useState(false)
     const [historiesIndex, setHistoriesIndex] = useState(-1)
-    const [windowInnerWidth, setWindowInnerWidth] = useState(window.innerWidth)
-    const [windowInnerHeight, setWindowInnerHeight] = useState(window.innerHeight)
-    
-    useEffect(() => {
-        const onResize = () => {
-            setWindowInnerWidth(window.innerWidth)
-            setWindowInnerHeight(window.innerHeight)
-        }
-
-        window.addEventListener('resize', onResize)
-        return () => window.removeEventListener('resize', onResize)
-    }, [])
-
+    const {windowInnerWidth, windowInnerHeight} = useWindow()
 
     const decrementHistoriesIndex = () => setHistoriesIndex(prev => Math.max(0, prev - 1))
     const incrementHistoriesIndex = () => setHistoriesIndex(prev => Math.min(histories.length - 1, prev + 1))
