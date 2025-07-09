@@ -25,7 +25,7 @@ const StyledSettingsModal = styled.div`
     font-size: 1rem;
 
     @media screen and ((width < 500px) or (height < 520px)) {
-        font-size: 0.7rem;
+        font-size: 0.8rem;
     }
 `
 
@@ -71,7 +71,7 @@ const Buttons = styled.div`
 
 const StyledModalButton = styled(ModalButton)`
     @media screen and (width < 500px) {
-        font-size: 0.7rem;
+        font-size: 0.8rem;
     }
 `
 

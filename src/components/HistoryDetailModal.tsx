@@ -53,6 +53,7 @@ const Main = styled.main`
 `
 
 const PageButton = styled.button`
+    color: black;
     background-color: white;
     font-size: 2.5rem;
     border: none;

@@ -22,8 +22,8 @@ const Body = styled.div`
 const StyledHistoryModal = styled.div<{$windowInnerWidth: number, $windowInnerHeight: number}>`
     // 183px per square + 10px padding = 193px. We subtract 10 from the inner width to account for the 10px addional padding.    
     --history-width: ${({$windowInnerWidth, $windowInnerHeight}) => {
-        const gridSquareSidePlusPadding = ($windowInnerHeight >= 350 ? 183 : 150) + 10;    
-        return `${Math.floor(($windowInnerWidth - 10) / gridSquareSidePlusPadding) * gridSquareSidePlusPadding + 10}px;`
+        const gridSquareSidePlusPadding = ($windowInnerHeight >= 350 ? 183 : 150) + 20;    
+        return `${Math.floor(($windowInnerWidth - 20) / gridSquareSidePlusPadding) * gridSquareSidePlusPadding + 20}px;`
     }}
     
 
@@ -34,7 +34,7 @@ const StyledHistoryModal = styled.div<{$windowInnerWidth: number, $windowInnerHe
     overflow-y: auto;
     scrollbar-color: white black;
     scrollbar-width: thin;
-    gap: 10px;
+    gap: 20px;
     padding: 10px;
     padding-top: 0;
 
