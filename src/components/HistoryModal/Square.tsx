@@ -3,11 +3,13 @@ import styled from "@emotion/styled"
 import type { ReactNode } from 'react'
 
 const StyledHistorySquare = styled(StyledSquare)`
+    color: black;
     font-size: 3rem;
     width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
+    cursor: pointer;
 
     // overwriting media rule on StyledSquare
     @media screen and (width < 800px) {

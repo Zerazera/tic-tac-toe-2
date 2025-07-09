@@ -3,7 +3,7 @@ import Square from "./Square"
 import type { SquareValue } from "../../types/Square"
 import type { history } from "../../types/history"
 
-const StyledBoard = styled.button`
+const StyledBoard = styled.div`
     display: grid;
     grid-template: repeat(3, 1fr) / repeat(3, 1fr);
     gap: 0;
