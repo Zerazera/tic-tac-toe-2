@@ -8,7 +8,6 @@ const StyledHistorySquare = styled(StyledSquare)`
     display: flex;
     justify-content: center;
     align-items: center;
-    color: black;
 
     // overwriting media rule on StyledSquare
     @media screen and (width < 800px) {

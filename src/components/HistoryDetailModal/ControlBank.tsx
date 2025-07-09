@@ -14,7 +14,6 @@ const ControlButton = styled.button`
     font-size: 2rem;
     border: none;
     cursor: pointer;
-    color: black;
 
     &:disabled {
         color: grey;
