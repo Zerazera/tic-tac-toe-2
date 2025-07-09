@@ -8,7 +8,6 @@ const StyledBoard = styled.button`
     grid-template: repeat(3, 1fr) / repeat(3, 1fr);
     gap: 0;
     align-content: center;
-    -webkit-appearance: none;
 `
 
 type BoardProps = {
