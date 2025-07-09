@@ -10,6 +10,7 @@ const StyledControlBank = styled.div`
 `
 
 const ControlButton = styled.button`
+    color: black;
     background-color: rgba(0, 0, 0, 0);
     font-size: 2rem;
     border: none;
