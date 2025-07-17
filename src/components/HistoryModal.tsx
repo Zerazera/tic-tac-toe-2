@@ -21,7 +21,7 @@ const Body = styled.div`
 `
 
 const StyledHistoryModal = styled.div<{$windowInnerWidth: number, $windowInnerHeight: number}>`
-    // 183px per square + 10px padding = 193px. We subtract 10 from the inner width to account for the 10px addional padding.    
+    // 183px per square + 20px padding = 193px. We subtract 20 from the inner width to account for the 20px addional padding.    
     --history-width: ${({$windowInnerWidth, $windowInnerHeight}) => {
         const gridSquareSidePlusPadding = ($windowInnerHeight >= 350 ? 183 : 150) + 20;    
         return `${Math.floor(($windowInnerWidth - 20) / gridSquareSidePlusPadding) * gridSquareSidePlusPadding + 20}px;`
@@ -85,7 +85,15 @@ export default function HistoryModal({histories, closeModalFn}: {histories: hist
                     <Title>History</Title>
                 </header>                
                 <StyledHistoryModal $windowInnerWidth={windowInnerWidth} $windowInnerHeight={windowInnerHeight}>
-                    {histories.map((history, i) => <Board key={i} history={history} onClick={() => onClick(i)}/>)}
+                    {
+                        histories.map((history, i) => 
+                            <Board 
+                                key={i} 
+                                history={history} 
+                                onClick={() => onClick(i)}
+                            />
+                        )
+                    }
                 </StyledHistoryModal>
                 <Buttons>
                     <ModalButton onClick={closeModalFn}>Back to Game</ModalButton>
