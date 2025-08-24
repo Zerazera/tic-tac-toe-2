@@ -1,5 +1,5 @@
 import styled from "@emotion/styled"
-import type { Square as SquareType } from "../../types/Square"
+import type { SquareValue } from "../../types/Square"
 import Square from "./Square"
 
 const StyledBoard = styled.div`
@@ -16,22 +16,23 @@ const StyledBoard = styled.div`
 `
 
 type BoardProps = {
-    squares: SquareType[],
+    squareValues: SquareValue[],
+    areSquaresHovered: boolean[],
     winningSquares: number[]
 }
 
-export default function Board({squares, winningSquares}: BoardProps) {   
-    const isWin = winningSquares.every(square => !!squares[square].value)
+export default function Board({squareValues, areSquaresHovered, winningSquares}: BoardProps) {   
+    const isWin = winningSquares.every(square => !!squareValues[square])
 
     return (
         <StyledBoard>
             {
-                squares.map(({value, isHovered}, i) => 
+                squareValues.map((value, i) => 
                     <Square 
                         key={i} 
                         id={i} 
                         isWinningSquare={isWin && winningSquares.includes(i)}
-                        isHovered={isHovered}
+                        isHovered={areSquaresHovered[i]}
                     >
                         {value}
                     </Square>

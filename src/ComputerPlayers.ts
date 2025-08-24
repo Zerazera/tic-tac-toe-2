@@ -1,20 +1,20 @@
 import type { Player, ComputerPlayer } from "./types/Player"
-import type { Square } from "./types/Square"
+import type { SquareValue } from "./types/Square"
 import type { takeSquareFn } from "./App"
 import type { boardStateFn } from "./boardState"
 import type { token } from "./types/token"
 
-type ComputerPlayerFn = (player: Player, squares: Square[], boardState: boardStateFn, takeSquare: takeSquareFn) => void
-const randomPlayer: ComputerPlayerFn = (player, squares, boardState, takeSquare) => {
-    const {availableSquareIndexes} = boardState(squares)
+type ComputerPlayerFn = (player: Player, squareValues: SquareValue[], boardState: boardStateFn, takeSquare: takeSquareFn) => void
+const randomPlayer: ComputerPlayerFn = (player, squareValues, boardState, takeSquare) => {
+    const {availableSquareIndexes} = boardState(squareValues)
     takeSquare(availableSquareIndexes[Math.floor(Math.random() * availableSquareIndexes.length)], player.token)
 }
 
-const strategicPlayer: ComputerPlayerFn = (player, squares, boardState, takeSquare) => {
-    const {availableSquareIndexes, tokenIndexes} = boardState(squares)
+const strategicPlayer: ComputerPlayerFn = (player, squareValues, boardState, takeSquare) => {
+    const {availableSquareIndexes, tokenIndexes} = boardState(squareValues)
     const otherPlayerToken: token = player.token === 'X' ? 'O' : 'X'
-    const tokenIndexCountsWithOneWinningToken: number[] = Array(squares.length).fill(0)
-    const tokenIndexCountsWithOneLosingToken: number[] = Array(squares.length).fill(0)
+    const tokenIndexCountsWithOneWinningToken: number[] = Array(squareValues.length).fill(0)
+    const tokenIndexCountsWithOneLosingToken: number[] = Array(squareValues.length).fill(0)
 
     let blockingSquare: number | null = null   
     
@@ -51,9 +51,9 @@ const strategicPlayer: ComputerPlayerFn = (player, squares, boardState, takeSqua
     }
 
     // block double fork attempt
-    if ((availableSquareIndexes.length === 6 && squares[4].value === player.token) && 
-        ((squares[0].value === otherPlayerToken && squares[8].value === otherPlayerToken) || 
-        (squares[2].value === otherPlayerToken && squares[6].value === otherPlayerToken))
+    if ((availableSquareIndexes.length === 6 && squareValues[4] === player.token) && 
+        ((squareValues[0] === otherPlayerToken && squareValues[8] === otherPlayerToken) || 
+        (squareValues[2] === otherPlayerToken && squareValues[6] === otherPlayerToken))
     ) {        
         takeSquare(3, player.token)
         return
@@ -72,7 +72,7 @@ const strategicPlayer: ComputerPlayerFn = (player, squares, boardState, takeSqua
     }
 
     for (const [corner, oppositeCorner] of Object.entries(cornerMoves)) {
-        if (squares[+corner].value === otherPlayerToken && availableSquareIndexes.includes(oppositeCorner)) {
+        if (squareValues[+corner] === otherPlayerToken && availableSquareIndexes.includes(oppositeCorner)) {
             takeSquare(oppositeCorner, player.token)
             return
         }
@@ -87,33 +87,32 @@ const strategicPlayer: ComputerPlayerFn = (player, squares, boardState, takeSqua
     }
 }
 
-const minimaxPlayer: ComputerPlayerFn = (player, squares, boardState, takeSquare) => {
-    const {availableSquareIndexes} = boardState(squares)
+const minimaxPlayer: ComputerPlayerFn = (player, squareValues, boardState, takeSquare) => {
+    const {availableSquareIndexes} = boardState(squareValues)
 
-    const minimax = (squares: Square[], isX: boolean, alpha = -Infinity, beta = Infinity): number => {
-        const {availableSquareIndexes, winningToken, isGameOver} = boardState(squares)
+    const minimax = (squareValues: SquareValue[], isX: boolean, alpha = -Infinity, beta = Infinity): number => {
+        const {availableSquareIndexes, winningToken, isTerminal} = boardState(squareValues)
         const depth = availableSquareIndexes.length + 1
 
-        if (isGameOver) return (isX ? 1 : -1) * (winningToken === 'X' ? depth : winningToken === 'O' ? -depth : 0)
-
-        let maxScore = -Infinity
+        if (isTerminal) return (isX ? 1 : -1) * (winningToken === 'X' ? depth : winningToken === 'O' ? -depth : 0)
 
         for (const index of availableSquareIndexes) {
-            const copy = squares.map((square, i) => i === index ? {...square, value: isX ? 'O' : 'X' as token} : {...square})
-            maxScore = Math.max(maxScore, minimax(copy, !isX, -beta, -alpha))
-            alpha = Math.max(alpha, maxScore)
+            const copy = [...squareValues]
+            copy[index] = isX ? 'O' : 'X'
+            beta = Math.min(beta, -minimax(copy, !isX, -beta, -alpha))
             
             if (alpha >= beta) break
         }
 
-        return -maxScore
+        return beta
     }
 
     let maxScore = -Infinity
     let maxSquare = -1
 
     for (const index of availableSquareIndexes) {
-        const copy = squares.map((square, i) => i === index ? {...square, value: player.token} : {...square})
+        const copy = [...squareValues]
+        copy[index] = player.token
         const score = minimax(copy, player.token === 'X')
 
         if (score > maxScore) {

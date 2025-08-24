@@ -98,7 +98,7 @@ type HistoryDetailModalProps = {
 export default function HistoryDetailModal({histories, historiesIndex, incrementHistoriesIndex, decrementHistoriesIndex, closeModalFn, closeParentModalFn}: HistoryDetailModalProps) {
     const [priorHistoriesIndex, setPriorHistoriesIndex] = useState(historiesIndex)
     const history = histories[historiesIndex]
-    const {squares, setSquares, hoverSquare, unHoverSquare} = useSquares()
+    const {squareValues, setSquareValues, areSquaresHovered, hoverSquare, unHoverSquare} = useSquares()
     
     const [currentLength, setcurrentLength] = useState(history.history.length)
     const [priorCurrentLength, setPriorCurrentLength] = useState(-1)
@@ -134,7 +134,7 @@ export default function HistoryDetailModal({histories, historiesIndex, increment
 
         const newSquareValues: SquareValue[] = Array(9).fill(null)
         history.history.slice(0, currentLength).forEach(({squareIndex, token}) => newSquareValues[squareIndex] = token)
-        setSquares(prev => prev.map((square, i) => ({...square, value: newSquareValues[i]})))
+        setSquareValues(newSquareValues)
     }
 
     const pause = () => {
@@ -178,7 +178,8 @@ export default function HistoryDetailModal({histories, historiesIndex, increment
                         }
                         board={
                             <Board 
-                                squares={squares}
+                                squareValues={squareValues}
+                                areSquaresHovered={areSquaresHovered}
                                 winningSquares={history.winningSquares}
                             />
                         }

@@ -1,18 +1,46 @@
 import { useState } from "react"
-import type { Square } from "../types/Square"
+import type { SquareValue } from "../types/Square"
+import type { token } from "../types/token"
 
 export function useSquares() {
-    const emptySquares: () => Square[] = () => Array(9).fill(null).map(_ => ({value: null, isHovered: false}))
-    const [squares, setSquares] = useState(() => emptySquares())
-    const resetSquares = () => setSquares(() => emptySquares())
-    const hoverSquare = (index: number) => setSquares(prev => prev.map((square, i) => index === i ? {...square, isHovered: true} : {...square}))
-    const unHoverSquare = (index: number) => setSquares(prev => prev.map((square, i) => index === i ? {...square, isHovered: false}  : {...square}))
+    const initialSquareValues: () => SquareValue[] = () => Array(9).fill(null)
+    const initialAreSquaresHovered: () => boolean[] = () => Array(9).fill(false)
+    
+    const [squareValues, setSquareValues] = useState(() => initialSquareValues())
+    const [areSquaresHovered, setAreSquaresHovered] = useState(() => initialAreSquaresHovered())
+    
+    const resetSquares = () => {
+        setSquareValues(initialSquareValues())
+        setAreSquaresHovered(initialAreSquaresHovered())
+    }
+    
+    const setSquareValue = (index: number, token: token) => setSquareValues(prev => {
+        const copy = [...prev]
+        copy[index] = token
+        return copy
+    })
+    
+    
+    const hoverSquare = (index: number) => setAreSquaresHovered(prev => {
+        const copy = [...prev]
+        prev[index] = true
+        return copy
+    })
+
+    const unHoverSquare = (index: number) => setAreSquaresHovered(prev => {
+        const copy = [...prev]
+        prev[index] = false
+        return copy
+    })
 
     return {
-        squares,
-        setSquares,
-        resetSquares,
+        squareValues,
+        setSquareValue,
+        setSquareValues,
+        areSquaresHovered,
         hoverSquare,
-        unHoverSquare
+        unHoverSquare,
+        resetSquares
+
     }
 }

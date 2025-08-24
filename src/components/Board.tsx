@@ -1,6 +1,6 @@
 import styled from "@emotion/styled"
 import Square from "./Square"
-import type { Square as SquareType } from "../types/Square"
+import type { SquareValue } from "../types/Square"
 import type { Player } from "../types/Player"
 import type { takeSquareFn } from "../App"
 import { boardState } from "../boardState"
@@ -25,25 +25,26 @@ const StyledBoard = styled.div`
 `
 
 type BoardProps = {
-    squares: SquareType[],
+    squareValues: SquareValue[],
+    areSquaresHovered: boolean[],
     takeSquare: takeSquareFn,
     currentPlayer: Player,
 }
 
-export default function Board({squares, takeSquare, currentPlayer}: BoardProps) {
-    const {isGameOver, squaresInWin} = boardState(squares)
+export default function Board({squareValues, areSquaresHovered, takeSquare, currentPlayer}: BoardProps) {
+    const {isTerminal, squaresInWin} = boardState(squareValues)
         
     return (
         <StyledBoard>
-            {squares.map(({value, isHovered}, i) => 
+            {squareValues.map((value, i) => 
                 <Square 
                     key={i} 
                     id={i} 
                     onClick={() => currentPlayer.type === 'human' && takeSquare(i, currentPlayer.token)} 
-                    isGameOver={isGameOver} 
+                    isGameOver={isTerminal} 
                     isWinningSquare={squaresInWin.includes(i)}
                     isHumanPlayer={currentPlayer.type === 'human'}
-                    isHovered={isHovered}
+                    isHovered={areSquaresHovered[i]}
                 >
                     {value}
                 </Square>)}

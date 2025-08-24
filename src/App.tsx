@@ -1,7 +1,7 @@
 import { useState } from "react"
 import styled from "@emotion/styled"
 import Board from "./components/Board"
-import type { Square } from "./types/Square"
+import type { SquareValue } from "./types/Square"
 import type { Player } from "./types/Player"
 import type { runningHistory } from "./types/runningHistory"
 import type { history } from "./types/history"
@@ -73,8 +73,8 @@ const Buttons = styled.div`
 export type takeSquareFn = (index: number, token: token) => void
 
 export default function App() {
-  const {squares, setSquares, resetSquares, hoverSquare, unHoverSquare} = useSquares()
-  const [prevSquares, setPrevSquares] = useState<Square[]>([])
+  const {squareValues, areSquaresHovered, setSquareValue, resetSquares, hoverSquare, unHoverSquare} = useSquares()
+  const [prevSquareValues, setPrevSquareValues] = useState<SquareValue[]>([])
   const [runningHistory, setRunningHistory] = useState<runningHistory[]>([])
   const [history, setHistory] = useState<history[]>([])
   const [players, setPlayers] = useState<[Player, Player]>([
@@ -93,17 +93,18 @@ export default function App() {
       isCurrent: false,
     }
   ])
-  const [isScoreUpdated, setIsScoreUpdated] = useState(false)
+  // const [isScoreUpdated, setIsScoreUpdated] = useState(false)
+  const [isGameOver, setIsGameOver] = useState(false)
   const [isGameOverModalShown, setIsGameOverModalShown] = useState(false)
   const [wasGameOverModalShown, setWasGameOverModalShown] = useState(false)
   const [isSettingsModalShown, setIsSettingsModalShown] = useState(true)
   const [isHistoryModalShown, setIsHistoryModalShown] = useState(false)
 
-  const {isGameOver, winningToken, squaresInWin} = boardState(squares)
+  const {isTerminal, winningToken, squaresInWin} = boardState(squareValues)
 
   const takeSquare: takeSquareFn = (index, token) => {
-    if (!squares[index].value) {
-      setSquares(prev => prev.map((square, i) => i === index && !square.value ? {...square, value: token} : {...square}))
+    if (!squareValues[index]) {
+      setSquareValue(index, token)
       setRunningHistory(prev => [...prev, {squareIndex: index, token}])
       setPlayers(prev => prev.map(player => ({...player, isCurrent: !player.isCurrent})) as [Player, Player])
     } else throw new Error('Attempting to take occupied square.')
@@ -121,8 +122,9 @@ export default function App() {
     }
 
     resetSquares()
-    setPrevSquares([])
-    setIsScoreUpdated(false)
+    setPrevSquareValues([])
+    // setIsScoreUpdated(false)
+    setIsGameOver(false)
     setRunningHistory([])
     setIsGameOverModalShown(false)
     setWasGameOverModalShown(false)
@@ -137,31 +139,51 @@ export default function App() {
   const currentPlayer = players.find(player => player.isCurrent)
   if (!currentPlayer) throw new Error('No current player.')
 
-  if (squares !== prevSquares && !isGameOverModalShown && !isSettingsModalShown && !isHistoryModalShown) {      
-    setPrevSquares(squares)
+  if (squareValues !== prevSquareValues && !isGameOverModalShown && !isSettingsModalShown && !isHistoryModalShown) {
+    setPrevSquareValues(squareValues)
+
+    if (isTerminal && !isGameOver) {
+      setIsGameOver(true)
+
+      // setIsScoreUpdated(true)
+      setHistory(prev => 
+        [
+          ...prev, 
+          {
+            history: runningHistory.map(history => ({...history})), 
+            winningSquares: [...squaresInWin], 
+            winningToken, 
+            players: players.map(player => ({...player})) as [Player, Player]
+          }
+        ]
+      )    
+      
+      if (winningToken) setPlayers(prev => prev.map(player => winningToken === player.token ? {...player, score: player.score + 1} : {...player}) as [Player, Player])
+      return
+    }
     
     if (!isGameOver && currentPlayer.type !== 'human') {
         const playerType = currentPlayer.type
-        setTimeout(() => getComputerPlayer(playerType)(currentPlayer, squares, boardState, takeSquare), 500)
+        setTimeout(() => getComputerPlayer(playerType)(currentPlayer, squareValues, boardState, takeSquare), 500)
     }      
   }
 
-  if (isGameOver && !isScoreUpdated) {
-    setIsScoreUpdated(true)
-    setHistory(prev => 
-      [
-        ...prev, 
-        {
-          history: runningHistory.map(history => ({...history})), 
-          winningSquares: [...squaresInWin], 
-          winningToken, 
-          players: players.map(player => ({...player})) as [Player, Player]
-        }
-      ]
-    )    
-    if (!winningToken) return;
-    setPlayers(prev => prev.map(player => winningToken === player.token ? {...player, score: player.score + 1} : {...player}) as [Player, Player])
-  }
+  // if (isGameOver && !isScoreUpdated) {
+  //   // setIsScoreUpdated(true)
+  //   setHistory(prev => 
+  //     [
+  //       ...prev, 
+  //       {
+  //         history: runningHistory.map(history => ({...history})), 
+  //         winningSquares: [...squaresInWin], 
+  //         winningToken, 
+  //         players: players.map(player => ({...player})) as [Player, Player]
+  //       }
+  //     ]
+  //   )    
+  //   if (!winningToken) return;
+  //   setPlayers(prev => prev.map(player => winningToken === player.token ? {...player, score: player.score + 1} : {...player}) as [Player, Player])
+  // }
 
   if (isGameOver && !isGameOverModalShown && !wasGameOverModalShown) {
     setTimeout(() => {
@@ -220,7 +242,7 @@ export default function App() {
                 )}
               </>
             }
-          board={<Board squares={squares} takeSquare={takeSquare} currentPlayer={currentPlayer} />}
+          board={<Board squareValues={squareValues} areSquaresHovered={areSquaresHovered} takeSquare={takeSquare} currentPlayer={currentPlayer} />}
           runningHistory={<RunningHistory runningHistory={runningHistory} hoverSquare={hoverSquare} unHoverSquare={unHoverSquare} />}
         />
         <Buttons>

@@ -1,16 +1,16 @@
-import type { Square, SquareValue } from "./types/Square"
+import type { SquareValue } from "./types/Square"
 import type { tokenIndex } from "./types/tokenIndex"
 
-export type boardStateFn = (squares: Square[]) => {
+export type boardStateFn = (squareValues: SquareValue[]) => {
     availableSquareIndexes: number[],
     tokenIndexes: tokenIndex[],
-    isGameOver: boolean,
+    isTerminal: boolean,
     winningToken: SquareValue
     squaresInWin: number[]
 }
 
-export const boardState: boardStateFn = (squares) => {
-    const availableSquareIndexes = Array(squares.length).fill(null).map((_, i) => i).filter(x => !squares[x].value)
+export const boardState: boardStateFn = (squareValues) => {
+    const availableSquareIndexes = Array(squareValues.length).fill(null).map((_, i) => i).filter(x => !squareValues[x])
     
     const tokenIndexes: tokenIndex[] = []
     let winningToken: SquareValue = null
@@ -28,7 +28,6 @@ export const boardState: boardStateFn = (squares) => {
 
     let squaresInWin: number[] = []
 
-
     for (const winningSquares of winningSquaresSet) {
         const tokenIndex: tokenIndex = {
             X: [],
@@ -36,7 +35,7 @@ export const boardState: boardStateFn = (squares) => {
             null: []
         }
 
-        winningSquares.forEach(squareIndex => tokenIndex[squares[squareIndex].value ?? 'null'].push(squareIndex))
+        winningSquares.forEach(squareIndex => tokenIndex[squareValues[squareIndex] ?? 'null'].push(squareIndex))
 
         tokenIndexes.push(tokenIndex)
         if (tokenIndex['X'].length === 3) {
@@ -49,12 +48,12 @@ export const boardState: boardStateFn = (squares) => {
         }
     }
 
-    const isGameOver = !!winningToken || availableSquareIndexes.length === 0
+    const isTerminal = !!winningToken || availableSquareIndexes.length === 0
 
     return {
         availableSquareIndexes,
         tokenIndexes,
-        isGameOver,
+        isTerminal,
         winningToken,
         squaresInWin
     }
