@@ -93,7 +93,6 @@ export default function App() {
       isCurrent: false,
     }
   ])
-  // const [isScoreUpdated, setIsScoreUpdated] = useState(false)
   const [isGameOver, setIsGameOver] = useState(false)
   const [isGameOverModalShown, setIsGameOverModalShown] = useState(false)
   const [wasGameOverModalShown, setWasGameOverModalShown] = useState(false)
@@ -123,7 +122,6 @@ export default function App() {
 
     resetSquares()
     setPrevSquareValues([])
-    // setIsScoreUpdated(false)
     setIsGameOver(false)
     setRunningHistory([])
     setIsGameOverModalShown(false)
@@ -145,7 +143,6 @@ export default function App() {
     if (isTerminal && !isGameOver) {
       setIsGameOver(true)
 
-      // setIsScoreUpdated(true)
       setHistory(prev => 
         [
           ...prev, 
@@ -167,23 +164,6 @@ export default function App() {
         setTimeout(() => getComputerPlayer(playerType)(currentPlayer, squareValues, boardState, takeSquare), 500)
     }      
   }
-
-  // if (isGameOver && !isScoreUpdated) {
-  //   // setIsScoreUpdated(true)
-  //   setHistory(prev => 
-  //     [
-  //       ...prev, 
-  //       {
-  //         history: runningHistory.map(history => ({...history})), 
-  //         winningSquares: [...squaresInWin], 
-  //         winningToken, 
-  //         players: players.map(player => ({...player})) as [Player, Player]
-  //       }
-  //     ]
-  //   )    
-  //   if (!winningToken) return;
-  //   setPlayers(prev => prev.map(player => winningToken === player.token ? {...player, score: player.score + 1} : {...player}) as [Player, Player])
-  // }
 
   if (isGameOver && !isGameOverModalShown && !wasGameOverModalShown) {
     setTimeout(() => {
